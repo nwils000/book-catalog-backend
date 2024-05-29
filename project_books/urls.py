@@ -23,5 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('profile/', get_profile),
     path('token/', TokenObtainPairView.as_view()),
-    path('create_user', create_user)
+    path('create-user/', create_user)
 ]

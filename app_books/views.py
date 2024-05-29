@@ -13,7 +13,7 @@ def get_profile(request):
 
 @api_view(['POST'])
 @permission_classes([])
-def create_user(request):
+def create_user(request): 
     user = User.objects.create(username=request.data['username'])
     user.set_password(request.data['password']) 
     user.save()
