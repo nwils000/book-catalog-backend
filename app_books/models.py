@@ -39,7 +39,7 @@ class Profile(models.Model):
         return self.user.username
     
 class Book(models.Model):
-    title = models.TextField()
+    title = models.TextField(unique=True)
     author = models.CharField(max_length=30)
     genre = models.CharField(max_length=50, choices=GENRES)
     description = models.TextField()

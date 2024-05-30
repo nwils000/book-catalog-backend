@@ -32,5 +32,8 @@ urlpatterns = [
     path('profile/', get_profile),
     path('token/', TokenObtainPairView.as_view()),
     path('create-user/', create_user),
+    path('user-create-book/', user_create_book),
+    path('user-delete-book/', delete_book_from_shelf),
+    path('user-update-book/', update_book),
     path('', include(router.urls))
 ]
