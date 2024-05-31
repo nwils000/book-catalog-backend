@@ -54,6 +54,25 @@ def user_create_book(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def find_book_and_add_to_bookshelf(request): 
+    book = Book.objects.get(id=request.data['id'])
+    try:
+        user = request.user
+        profile = Profile.objects.get(user=user)
+    except User.DoesNotExist:
+        return Response({'error': 'User does not exist'})
+    except Profile.DoesNotExist:
+        return Response({'error': 'Profile does not exist'})
+    
+    bookshelf = BookShelf.objects.get(owner=profile, title=request.data['shelf_title'])
+
+    bookshelf.books.add(book)
+
+    book_serialized = BookSerializer(book)
+    return Response(book_serialized.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def user_create_bookshelf(request): 
     try:
         user = user = request.user
@@ -92,6 +111,27 @@ def delete_book_from_shelf(request):
     bookshelf_serialized = BookShelfSerializer(bookshelf)
     return Response(bookshelf_serialized.data)
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_shelf(request):
+    try:
+        user = request.user
+        profile = Profile.objects.get(user=user)
+    except User.DoesNotExist:
+        return Response({'error': 'User does not exist'})
+    except Profile.DoesNotExist:
+        return Response({'error': 'Profile does not exist'})
+    try:
+        bookshelf, created = BookShelf.objects.get_or_create(owner=profile, title=request.data['shelf_title'])
+        bookshelf.save()
+    except Book.DoesNotExist:
+        return Response({'error': 'Book does not exist'})
+
+    bookshelf.delete()
+
+    bookshelf_serialized = BookShelfSerializer(bookshelf)
+    return Response(bookshelf_serialized.data)
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_book(request):
@@ -122,3 +162,4 @@ class BookShelfViewSet(viewsets.ModelViewSet):
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = []

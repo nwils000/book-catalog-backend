@@ -36,5 +36,8 @@ urlpatterns = [
     path('user-delete-book/', delete_book_from_shelf),
     path('user-update-book/', update_book),
     path('user-create-bookshelf/', user_create_bookshelf),
+    path('get-all-books/', BookViewSet.as_view({'get': 'list'})),
+    path('add-existing-book-to-shelf/', find_book_and_add_to_bookshelf),
+    path('user-delete-shelf/', delete_shelf),
     path('', include(router.urls))
 ]
