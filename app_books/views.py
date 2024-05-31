@@ -37,19 +37,36 @@ def user_create_book(request):
     book = Book.objects.create(title=request.data['title'], author=request.data['author'], description=request.data['description'], genre=request.data['genre'])
     book.save()
     try:
-        user = User.objects.get(username=request.data['username'])
+        user = request.user
+        profile = Profile.objects.get(user=user)
+    except User.DoesNotExist:
+        return Response({'error': 'User does not exist'})
+    except Profile.DoesNotExist:
+        return Response({'error': 'Profile does not exist'})
+    
+
+    bookshelf = BookShelf.objects.get(owner=profile, title=request.data['shelf_title']['shelf_title'])
+
+    bookshelf.books.add(book)
+
+    book_serialized = BookSerializer(book)
+    return Response(book_serialized.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def user_create_bookshelf(request): 
+    try:
+        user = user = request.user
         profile = Profile.objects.get(user=user)
     except User.DoesNotExist:
         return Response({'error': 'User does not exist'})
     except Profile.DoesNotExist:
         return Response({'error': 'Profile does not exist'})
 
-    bookshelf, created = BookShelf.objects.get_or_create(owner=profile)
+    bookshelf = BookShelf.objects.create(owner=profile, title=request.data['title'])
 
-    bookshelf.books.add(book)
-
-    book_serialized = BookSerializer(book)
-    return Response(book_serialized.data)
+    bookshelf_serialized = BookShelfSerializer(bookshelf)
+    return Response(bookshelf_serialized.data)
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -67,7 +84,7 @@ def delete_book_from_shelf(request):
     except Book.DoesNotExist:
         return Response({'error': 'Book does not exist'})
 
-    bookshelf, created = BookShelf.objects.get_or_create(owner=profile)
+    bookshelf, created = BookShelf.objects.get_or_create(owner=profile, title=request.data['shelf_title'])
 
     bookshelf.books.remove(book)
     bookshelf.save()

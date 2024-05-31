@@ -48,7 +48,7 @@ class Book(models.Model):
         return self.title
 
 class BookShelf(models.Model):
-    title = models.CharField(max_length=100, default='Book Shelf')
+    title = models.CharField(max_length=100, default='Book Shelf', unique=True)
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
     books = models.ManyToManyField(Book)
 

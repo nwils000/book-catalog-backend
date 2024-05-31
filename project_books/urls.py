@@ -35,5 +35,6 @@ urlpatterns = [
     path('user-create-book/', user_create_book),
     path('user-delete-book/', delete_book_from_shelf),
     path('user-update-book/', update_book),
+    path('user-create-bookshelf/', user_create_bookshelf),
     path('', include(router.urls))
 ]
